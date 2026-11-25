@@ -1,0 +1,7 @@
+node_modules/
+windows/bin/
+windows/obj/
+windows/publish/
+*.local.json
+rapport*.txt
+.test-output/

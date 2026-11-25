@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  kit-tests:
+    name: Kit tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Run connector kit tests
+        run: node --test "test/**/*.test.ts"
+
+  windows-pilot:
+    name: Windows Bluetooth pilot (read-only guard)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - name: Build managed Windows pilot
+        run: dotnet build windows -c Release -p:PublishAot=false
+      - name: Verify read-only command refusal without radio
+        shell: pwsh
+        run: |
+          $pilot = Get-ChildItem -Path windows/bin/Release -Filter "ashiato-ftms.exe" -Recurse | Select-Object -First 1
+          if (-not $pilot) { throw "Pilot executable not found." }
+          $env:ROMERIA_TEST_PILOT = $pilot.FullName
+          node --test test/native.test.ts

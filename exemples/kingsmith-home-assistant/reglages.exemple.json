@@ -1,0 +1,8 @@
+{
+  "url": "http://homeassistant.local:8123",
+  "token": "<jeton d'accès longue durée de Home Assistant>",
+  "speedEntity": "sensor.walkingpad_speed",
+  "distanceEntity": "sensor.walkingpad_distance",
+  "runningEntity": "binary_sensor.walkingpad_running",
+  "stop": { "domain": "button", "service": "press", "entityId": "button.walkingpad_stop" }
+}

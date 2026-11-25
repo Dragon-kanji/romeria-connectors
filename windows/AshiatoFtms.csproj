@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Pilote Bluetooth FTMS du serveur local d'Ashiato (docs/connecteurs.md, « Le pilote FTMS »). -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <AssemblyName>ashiato-ftms</AssemblyName>
+    <Company>Kurobara Systems</Company>
+    <Product>Romeria</Product>
+    <AssemblyTitle>Romeria, connecteur FTMS</AssemblyTitle>
+    <Copyright>Copyright Kurobara Systems</Copyright>
+    <PackageProjectUrl>https://kurobara.systems</PackageProjectUrl>
+    <RootNamespace>Ashiato.Ftms</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishAot>true</PublishAot>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+</Project>

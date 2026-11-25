@@ -1,0 +1,16 @@
+{
+  "name": "romeria-connectors",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Romeria treadmill connector kit: read a walking treadmill and at most stop it (pont/v1 contract).",
+  "license": "Apache-2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "pont": "node bin/pont.ts",
+    "test": "node --test \"test/**/*.test.ts\"",
+    "check": "tsc"
+  }
+}
