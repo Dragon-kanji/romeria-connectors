@@ -10,6 +10,10 @@ GATT et abonnements aux notifications (CCCD). Vitesse déclarée : aucune radio 
 Stop ne bloque pas derrière une lecture ; les capacités d'écriture appartiennent à chaque opération et
 expirent à sa fin. Une coupure entre demande de contrôle FTMS et Stop invalide l'opération sans la rejouer.
 
+Le connecteur [HTTP local](http-local.md) se limite à une adresse de boucle locale littérale et aux chemins
+`GET /telemetry` et `POST /stop`. Le transport refuse les redirections et les réponses de plus de 16 Kio.
+Il ignore les mandataires d'environnement. Le jeton du service local est distinct du jeton d'accès au pont.
+
 Règle de Romeria : **le jeu n'accélère jamais le tapis et ne le démarre jamais**. Seules les actions vers plus lent ou l'arrêt sont permises, et le kit ne permet que l'arrêt. Voici où et comment elle est tenue, couche par couche.
 
 ## 1. Au chargement : le connecteur et ses cibles (`src/kit.ts`, `checkConnector`)

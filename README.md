@@ -47,6 +47,7 @@ Then, in Romeria, pick the `pont` treadmill source with that address.
 | --- | --- | --- |
 | `simulateur` | trying without a treadmill | `node bin/pont.ts --connecteur simulateur` |
 | `ftms` (reference) | Bluetooth FTMS treadmills, the standard for recent machines | `node bin/pont.ts --connecteur ftms --adresse AA:BB:CC:DD:EE:FF --pilote ashiato-ftms.exe`; without a treadmill: `--simuler` |
+| [`http-local`](docs/http-local.md#english) | a service on the same machine that exposes readings and Stop | `node bin/pont.ts --connecteur http-local --reglages settings.local.json` |
 | KingSmith via Home Assistant (example) | a WalkingPad already linked to Home Assistant | `node bin/pont.ts --connecteur exemples/kingsmith-home-assistant/connecteur.ts --reglages my-settings.json` |
 
 The FTMS connector goes through a Bluetooth pilot. This small program talks to the system radio; its contract is in [docs/pilote-ftms.md](docs/pilote-ftms.md). On Windows, Romeria's pilot is `ashiato-ftms.exe`.

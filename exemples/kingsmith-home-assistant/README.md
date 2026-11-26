@@ -21,6 +21,6 @@ Pour un tapis KingSmith déjà relié à Home Assistant par son intégration. Le
 
 La mesure date du dernier rapport de Home Assistant sur la vitesse (`last_reported`, sinon `last_updated`). Si l'intégration ne rapporte pas au moins toutes les 3 s, la mesure sera dite périmée et le jeu ne comptera rien : il faut alors régler la cadence de l'intégration.
 
-## Le cas du joueur au Raspberry Pi
+## Services locaux sur Raspberry Pi
 
-Chez le créateur de Romeria, le tapis passe par son propre Raspberry Pi (`ksfit-control`), avec ses gardes à lui. Cet exemple ne le remplace pas : sur ce montage, le jeu garde la source `ashiato-pi`.
+Un service local sur un Raspberry Pi peut être relié au pont avec [le connecteur HTTP local](../../docs/http-local.md). L'exemple Home Assistant s'utilise quand le tapis expose ses mesures et son arrêt via l’API de Home Assistant.

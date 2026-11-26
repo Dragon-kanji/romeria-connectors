@@ -5,6 +5,7 @@
  *   node bin/pont.ts --connecteur simulateur [--vitesse 4]
  *   node bin/pont.ts --connecteur ftms --adresse AA:BB:CC:DD:EE:FF --pilote "C:\…\ashiato-ftms.exe"
  *   node bin/pont.ts --connecteur ftms --simuler
+ *   node bin/pont.ts --connecteur http-local --reglages reglages.local.json
  *   node bin/pont.ts --connecteur exemples/kingsmith-home-assistant/connecteur.ts --reglages mes-reglages.json
  *
  * Options : `--port 8800`, `--hote 127.0.0.1` (0.0.0.0 pour le réseau local : alors un jeton pour Stop),
@@ -25,6 +26,8 @@ import { createSimulatorConnector } from '../src/simulateur.ts';
 import { verifyConnectorSource } from '../src/verifier.ts';
 import { createRscConnector } from '../src/rsc.ts';
 import { createDeclaredConnector } from '../src/declared.ts';
+import { createHttpLocalConnector, readHttpLocalSettings } from '../src/http-local.ts';
+import { httpLocalFetch } from '../src/http-local-transport.ts';
 
 const { values } = parseArgs({
   options: {
@@ -42,7 +45,7 @@ const { values } = parseArgs({
   },
 });
 if (values.aide) {
-  console.log('node bin/pont.ts --connecteur simulateur|declare|rsc|ftms|fichier.ts [--adresse AA:BB:CC:DD:EE:FF --pilote chemin.exe] [--simuler] [--langue en|fr]');
+  console.log('node bin/pont.ts --connecteur simulateur|declare|rsc|ftms|http-local|fichier.ts [--reglages fichier.json] [--adresse AA:BB:CC:DD:EE:FF --pilote chemin.exe] [--simuler] [--langue en|fr]');
   process.exit(0);
 }
 
@@ -54,13 +57,26 @@ const fail = (message: string): never => {
   process.exit(1);
 };
 
-const which = values.connecteur ?? fail('--connecteur manquant : simulateur, ftms, ou le fichier de ton connecteur.');
+const which = values.connecteur ?? fail('--connecteur manquant : simulateur, ftms, http-local, ou le fichier de ton connecteur.');
 let radio: RawRadio | null = null;
 let candidate: unknown;
+let upstreamToken: string | undefined;
 let simulated = which === 'simulateur' || values.simuler;
 if (!Number.isInteger(Number(values.port)) || Number(values.port) < 1 || Number(values.port) > 65535) fail('Port invalide.');
 if (values.vitesse && (!Number.isFinite(Number(values.vitesse)) || Number(values.vitesse) < 0 || Number(values.vitesse) > 30)) fail('Vitesse de simulation invalide.');
-if (which === 'simulateur') {
+if (which === 'http-local') {
+  const file = values.reglages ?? fail('HTTP local : --reglages fichier.json est nécessaire.');
+  let payload: unknown;
+  try { payload = JSON.parse(readFileSync(resolve(file), 'utf8')) as unknown; }
+  catch { fail('HTTP local : lire un fichier JSON valide avec --reglages.'); }
+  try {
+    const settings = readHttpLocalSettings(payload);
+    upstreamToken = settings.token;
+    candidate = createHttpLocalConnector(settings);
+  } catch (error) {
+    fail(error instanceof Error ? error.message : 'HTTP local : réglages invalides.');
+  }
+} else if (which === 'simulateur') {
   candidate = createSimulatorConnector({ speedKmh: Number(values.vitesse ?? 4), now: Date.now }).connector;
 } else if (which === 'declare') {
   if (values.vitesse || values.simuler) fail('Mode déclaré : saisir la vitesse dans la console, jamais par une option de démarrage.');
@@ -115,7 +131,8 @@ if (which === 'simulateur') {
 
 const token = values['jeton-fichier'] ? readFileSync(resolve(values['jeton-fichier']), 'utf8').trim() : null;
 if (values.hote !== '127.0.0.1' && values.hote !== 'localhost' && !token) fail('Un pont sur le réseau exige un jeton.');
-const deps: KitDeps = { fetch: (url, init) => fetch(url, init), radio, now: Date.now, log };
+if (upstreamToken !== undefined && upstreamToken === token) fail('HTTP local : utiliser des jetons distincts pour le service local et le pont.');
+const deps: KitDeps = { fetch: which === 'http-local' ? httpLocalFetch : (url, init) => fetch(url, init), radio, now: Date.now, log };
 const running = await startConnector(candidate, deps).catch((error: unknown) => fail(error instanceof Error ? error.message : String(error)));
 const published = simulated ? { ...running, status: async () => ({ ...await running.status(), virtual: true, mode: 'simulation', measurement_source: 'simulated' as const }) } : running;
 const server = createPontServer({ connector: published, token, log });

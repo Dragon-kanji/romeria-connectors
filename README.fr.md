@@ -45,6 +45,7 @@ Dans Romeria, il suffit ensuite de choisir la source de tapis `pont` avec cette 
 | --- | --- | --- |
 | `simulateur` | essayer sans tapis | `node bin/pont.ts --connecteur simulateur` |
 | `ftms` (référence) | les tapis Bluetooth FTMS, le standard des tapis récents | `node bin/pont.ts --connecteur ftms --adresse AA:BB:CC:DD:EE:FF --pilote ashiato-ftms.exe` ; sans tapis : `--simuler` |
+| [`http-local`](docs/http-local.md) | un service qui expose les mesures et Stop sur la même machine | `node bin/pont.ts --connecteur http-local --reglages reglages.local.json` |
 | KingSmith par Home Assistant (exemple) | un WalkingPad déjà relié à Home Assistant | `node bin/pont.ts --connecteur exemples/kingsmith-home-assistant/connecteur.ts --reglages mes-reglages.json` |
 
 Le connecteur FTMS passe par un pilote Bluetooth. Ce petit programme parle la radio du système ; son contrat est dans [docs/pilote-ftms.md](docs/pilote-ftms.md). Sous Windows, celui de Romeria s'appelle `ashiato-ftms.exe`.
